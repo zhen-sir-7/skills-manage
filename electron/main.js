@@ -54,6 +54,7 @@ async function createWindow() {
     minWidth: 760,
     minHeight: 560,
     title: "Skills 管理器",
+    icon: path.join(__dirname, "..", "public", "icon.svg"),
     backgroundColor: "#111318",
     autoHideMenuBar: true,
     show: false,

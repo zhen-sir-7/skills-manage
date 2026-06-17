@@ -67,15 +67,7 @@ button { cursor: pointer; }
   border-bottom: 3px solid var(--line);
 }
 
-.logo {
-  display: grid;
-  place-items: center;
-  border: 3px solid var(--line);
-  background: var(--accent);
-  color: #fff;
-  font-size: 20px;
-  font-weight: 1000;
-}
+.logo { display: block; width: 64px; height: 64px; border: 3px solid var(--line); background: var(--field); object-fit: cover; }
 
 .brandTitle { font-size: 22px; font-weight: 1000; letter-spacing: -0.05em; }
 .brandSub { margin-top: 5px; color: var(--muted); font-size: 12px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">Skills 管理器图标</title>
+  <desc id="desc">强几何风格的模块连接标识</desc>
+  <rect width="256" height="256" rx="40" fill="#f2f0e8"/>
+  <rect x="40" y="40" width="176" height="176" fill="none" stroke="#111111" stroke-width="12"/>
+  <path d="M88 88h40v40H88zM128 128h40v40h-40z" fill="#111111"/>
+  <path d="M128 88h40v40h-40zM88 128h40v40H88z" fill="#f2f0e8" stroke="#111111" stroke-width="12"/>
+  <path d="M68 68h40v12H80v28H68V68ZM188 188h-40v-12h28v-28h12v40Z" fill="#e84b2f"/>
+  <path d="M128 60v28M128 168v28M60 128h28M168 128h28" stroke="#111111" stroke-width="12" stroke-linecap="square"/>
+</svg>
