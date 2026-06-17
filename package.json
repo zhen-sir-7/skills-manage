@@ -1,0 +1,19 @@
+{
+  "name": "skills-manage",
+  "version": "0.1.0",
+  "description": "用于管理 OpenCode、Claude 和 Agents 本地 Skills 的桌面应用。",
+  "main": "electron/main.js",
+  "type": "module",
+  "scripts": {
+    "desktop": "electron .",
+    "build": "node ./scripts/build-app.js",
+    "check": "node --check ./src/manager.js && node --check ./electron/main.js && node --check ./public/app.js && node --check ./scripts/build-app.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^37.2.6"
+  }
+}

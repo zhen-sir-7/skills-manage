@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Skills 管理器</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="structuralGrid" aria-hidden="true"></div>
+    <div class="appShell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="logo">01</div>
+          <div>
+            <div class="brandTitle">Skills 管理器</div>
+            <div class="brandSub">结构 / 索引 / 切换</div>
+          </div>
+        </div>
+
+        <label class="sideLabel">A. 当前目标</label>
+        <div id="targetTabs" class="targetTabs"></div>
+
+        <label class="sideLabel">B. 操作</label>
+        <button id="pickFolderButton" class="wideButton">导入本地 Skill</button>
+        <button id="refreshButton" class="wideButton ghost">刷新索引</button>
+
+        <div class="sideCard">
+          <div class="sideCardTitle">路径</div>
+          <pre id="paths"></pre>
+        </div>
+      </aside>
+
+      <main class="main">
+        <section class="heroPanel">
+          <div>
+            <p class="eyebrow">SYSTEM / SKILL INDEX</p>
+            <h1>把技能视为结构，而不是一堆文件夹。</h1>
+            <p>索引全部 Skills，识别托管与外部关系，再把相关技能加载到指定目标环境。</p>
+          </div>
+          <div class="stats">
+            <div><strong id="statVisible">0</strong><span>可见</span></div>
+            <div><strong id="statManaged">0</strong><span>托管</span></div>
+            <div><strong id="statProfiles">0</strong><span>方案</span></div>
+          </div>
+        </section>
+
+        <section class="searchBar">
+          <input id="searchInput" placeholder="搜索 skill 名称、标题、描述，例如：公众号、小说、Twitter、产品、诗词">
+          <select id="typeFilter">
+            <option value="all">全部</option>
+            <option value="managed">只看托管</option>
+            <option value="external">只看外部</option>
+            <option value="enabled">当前目标已启用</option>
+          </select>
+        </section>
+
+        <section class="contentGrid">
+          <div class="panel resultsPanel">
+            <div class="panelHead">
+              <div>
+                <h2>01 / 相关 Skills</h2>
+                <p id="resultHint">输入关键词过滤，也可以直接浏览全部。</p>
+              </div>
+            </div>
+            <div id="skillResults" class="skillResults"></div>
+          </div>
+
+          <div class="rightRail">
+            <div class="panel onlinePanel">
+              <div class="panelHead compact">
+                <h2>02 / 联网搜索</h2>
+              </div>
+              <div class="onlineForm">
+                <input id="onlineQuery" placeholder="搜索 GitHub Skills，例如：wechat、novel、twitter">
+                <button id="onlineSearchButton">搜索</button>
+              </div>
+              <div id="onlineResults" class="onlineResults"><p>输入关键词，从 GitHub 搜索可加载的 Skill 仓库。</p></div>
+            </div>
+
+            <div class="panel">
+              <div class="panelHead compact">
+                <h2>03 / 配置方案</h2>
+              </div>
+              <div class="profileForm">
+                <input id="profileName" placeholder="方案名，例如：写作">
+                <button id="saveProfileButton">保存当前目标</button>
+              </div>
+              <div id="profiles" class="profiles"></div>
+            </div>
+
+            <div class="panel tipPanel">
+              <h2>04 / 规则</h2>
+              <p>外部 Skill：先点“加载”，变成托管后再启用。</p>
+              <p>联网 Skill：从 GitHub 克隆仓库，自动导入第一个包含 SKILL.md 的目录。</p>
+              <p>托管 Skill：可在当前目标中一键启用或禁用。</p>
+              <p>配置方案：保存当前目标下所有已启用的托管 Skill。</p>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div id="toast" class="toast"></div>
+    <script src="app.js"></script>
+  </body>
+</html>
