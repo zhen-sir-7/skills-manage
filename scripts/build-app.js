@@ -8,15 +8,15 @@ const root = process.cwd();
 const electronDist = path.join(root, "node_modules", "electron", "dist");
 const output = path.join(root, "release", "win-unpacked");
 const appOutput = path.join(output, "resources", "app");
-const iconPath = path.join(root, "public", "app.ico");
+const iconPath = path.join(output, "app.ico");
 const exePath = path.join(output, "Skills 管理器.exe");
 const rcedit = path.join(root, "node_modules", "rcedit", "bin", process.arch === "x64" ? "rcedit-x64.exe" : "rcedit.exe");
 const execFileAsync = promisify(execFile);
 
 await fs.rm(output, { recursive: true, force: true });
 await fs.mkdir(path.dirname(output), { recursive: true });
-await writeIcon(iconPath);
 await fs.cp(electronDist, output, { recursive: true });
+await writeIcon(iconPath);
 
 await fs.rm(appOutput, { recursive: true, force: true });
 await fs.mkdir(appOutput, { recursive: true });

@@ -113,13 +113,17 @@ export async function importOnlineSkill(payload) {
   await fs.mkdir(DOWNLOADS_DIR, { recursive: true });
   const repoName = normalizeName(payload.fullName ?? payload.name ?? path.basename(cloneUrl, ".git"));
   const checkoutPath = path.join(DOWNLOADS_DIR, `${repoName}-${Date.now()}`);
-  await execFileAsync("git", ["clone", "--depth", "1", cloneUrl, checkoutPath], { windowsHide: true, timeout: 120000 });
-
-  const skillDirs = await findSkillDirs(checkoutPath);
-  if (skillDirs.length === 0) throw new Error("仓库中没有找到包含 SKILL.md 的目录。");
-  const skillPath = pickSkillDir(skillDirs, payload.skillPath);
-  const name = normalizeName(payload.importName ?? path.basename(skillPath));
-  return importSkill(skillPath, name);
+  try {
+    await execFileAsync("git", ["clone", "--depth", "1", cloneUrl, checkoutPath], { windowsHide: true, timeout: 120000 });
+    const skillDirs = await findSkillDirs(checkoutPath);
+    if (skillDirs.length === 0) throw new Error("仓库中没有找到包含 SKILL.md 的目录。");
+    const skillPath = pickSkillDir(skillDirs, payload.skillPath);
+    const name = normalizeName(payload.importName ?? path.basename(skillPath));
+    return importSkill(skillPath, name);
+  } catch (error) {
+    await fs.rm(checkoutPath, { recursive: true, force: true });
+    throw error;
+  }
 }
 
 export async function enableSkill(name, target = "opencode") {
@@ -253,7 +257,7 @@ async function runWorkflowStep(step) {
   if (step.runner === "custom") {
     const command = String(step.command ?? "").trim();
     if (!command) throw new Error("自定义步骤缺少命令。");
-    const parts = command.split(/\s+/);
+    const parts = splitCommand(command);
     return runCommand(parts[0], [...parts.slice(1), input]);
   }
   throw new Error(`未知执行器：${step.runner}`);
@@ -261,7 +265,19 @@ async function runWorkflowStep(step) {
 
 async function runCommand(command, args) {
   const result = await execFileAsync(command, args, { windowsHide: true, timeout: 300000, maxBuffer: 1024 * 1024 * 10 });
-  return { command, args, stdout: result.stdout, stderr: result.stderr };
+  return { command, args: redactLongArgs(args), stdout: result.stdout, stderr: result.stderr };
+}
+
+function splitCommand(command) {
+  const parts = [];
+  const pattern = /"([^"]*)"|'([^']*)'|(\S+)/g;
+  for (const match of command.matchAll(pattern)) parts.push(match[1] ?? match[2] ?? match[3]);
+  if (parts.length === 0) throw new Error("自定义步骤缺少命令。");
+  return parts;
+}
+
+function redactLongArgs(args) {
+  return args.map((arg) => (String(arg).length > 160 ? `${String(arg).slice(0, 160)}...` : arg));
 }
 
 function buildStepInput(step) {

@@ -3,6 +3,7 @@ const api = window.skillsManage;
 let state = null;
 let activeTarget = "opencode";
 let draftWorkflowSteps = [];
+let runningWorkflow = null;
 
 const el = {
   targetTabs: document.querySelector("#targetTabs"),
@@ -44,6 +45,7 @@ document.querySelector("#refreshButton").addEventListener("click", refresh);
 document.querySelector("#onlineSearchButton").addEventListener("click", searchOnline);
 document.querySelector("#addWorkflowStepButton").addEventListener("click", addWorkflowStep);
 document.querySelector("#saveWorkflowButton").addEventListener("click", saveWorkflow);
+el.workflowRunner.addEventListener("change", updateWorkflowCommandVisibility);
 el.onlineQuery.addEventListener("keydown", (event) => {
   if (event.key === "Enter") searchOnline();
 });
@@ -79,6 +81,7 @@ function render() {
   renderStats();
   renderResults();
   renderWorkflowBuilder();
+  updateWorkflowCommandVisibility();
   renderProfiles();
   renderPaths();
 }
@@ -247,7 +250,9 @@ function renderWorkflowBuilder() {
       <div class="workflowActions"></div>
     `;
     const actions = item.querySelector(".workflowActions");
-    actions.append(button("一键启动", "actionButton", () => runWorkflow(workflow.name)));
+    const runButton = button(runningWorkflow === workflow.name ? "运行中" : "一键启动", "actionButton", () => runWorkflow(workflow.name));
+    runButton.disabled = Boolean(runningWorkflow);
+    actions.append(runButton);
     actions.append(button("载入", "actionButton secondary", () => loadWorkflow(workflow)));
     actions.append(button("删除", "actionButton danger", () => action(() => api.deleteWorkflow({ name: workflow.name }), `已删除工作流 ${workflow.name}`)));
     el.workflowList.append(item);
@@ -281,6 +286,9 @@ function loadWorkflow(workflow) {
 }
 
 async function runWorkflow(name) {
+  if (runningWorkflow) return notify("已有工作流正在运行");
+  runningWorkflow = name;
+  renderWorkflowBuilder();
   el.workflowLog.textContent = `正在启动工作流：${name}\n`;
   try {
     const result = await api.runWorkflow({ name });
@@ -289,7 +297,14 @@ async function runWorkflow(name) {
   } catch (error) {
     el.workflowLog.textContent += error.message;
     notify(error.message);
+  } finally {
+    runningWorkflow = null;
+    renderWorkflowBuilder();
   }
+}
+
+function updateWorkflowCommandVisibility() {
+  el.workflowCommand.style.display = el.workflowRunner.value === "custom" ? "block" : "none";
 }
 
 function formatWorkflowLog(log) {
