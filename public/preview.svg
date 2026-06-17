@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">Skills 管理器界面预览</title>
+  <desc id="desc">应用的结构主义风格界面预览图</desc>
+  <rect width="1200" height="720" fill="#f2f0e8"/>
+  <path d="M0 0h1200v720H0z" fill="none" stroke="#111111" stroke-width="8"/>
+  <path d="M48 48h236v624H48z" fill="#dedbd0" stroke="#111111" stroke-width="6"/>
+  <path d="M316 48h836v144H316zM316 224h836v120H316zM316 376h552v296H316zM900 376h252v296H900z" fill="#fffdf5" stroke="#111111" stroke-width="6"/>
+  <rect x="80" y="80" width="68" height="68" fill="#f2f0e8" stroke="#111111" stroke-width="6"/>
+  <path d="M96 96h18v18H96zM114 114h18v18h-18z" fill="#111111"/>
+  <path d="M114 96h18v18h-18zM96 114h18v18H96z" fill="#f2f0e8" stroke="#111111" stroke-width="5"/>
+  <path d="M164 92h84M164 122h60" stroke="#111111" stroke-width="10"/>
+  <path d="M80 198h168M80 254h168M80 310h168" stroke="#111111" stroke-width="6"/>
+  <path d="M80 430h168M80 462h132M80 494h156M80 526h92" stroke="#62615b" stroke-width="5"/>
+  <path d="M352 92h408M352 134h312" stroke="#111111" stroke-width="16"/>
+  <path d="M968 74h130v42H968zM968 128h130v42H968z" fill="#f2c94c" stroke="#111111" stroke-width="5"/>
+  <path d="M352 260h236M620 260h180M832 260h248" stroke="#111111" stroke-width="10"/>
+  <path d="M352 408h216v104H352zM596 408h216v104H596zM352 540h216v104H352zM596 540h216v104H596z" fill="#fbf8ef" stroke="#111111" stroke-width="5"/>
+  <path d="M376 438h120M376 468h156M620 438h120M620 468h136M376 570h120M376 600h156M620 570h120M620 600h136" stroke="#111111" stroke-width="7"/>
+  <path d="M932 416h188M932 470h188M932 524h188" fill="none" stroke="#111111" stroke-width="5"/>
+  <circle cx="952" cy="416" r="12" fill="#e84b2f" stroke="#111111" stroke-width="5"/>
+  <circle cx="952" cy="470" r="12" fill="#2356d8" stroke="#111111" stroke-width="5"/>
+  <circle cx="952" cy="524" r="12" fill="#f2c94c" stroke="#111111" stroke-width="5"/>
+</svg>

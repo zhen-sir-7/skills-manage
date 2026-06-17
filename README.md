@@ -1,8 +1,27 @@
-# Skills 管理器
+<p align="center">
+  <img src="public/icon.svg" alt="Skills 管理器图标" width="96" height="96">
+</p>
 
-一个中文优先的桌面应用，用来统一管理 OpenCode、Claude、Agents 的本地 Skills。
+<h1 align="center">Skills 管理器</h1>
 
-应用会把导入的 Skill 保存到 `~/.skills-manage/store`，再通过目录符号链接或 Windows junction 启用到目标目录：
+<p align="center">中文优先的桌面应用，用来统一管理、搜索、启用和编排 AI Agent Skills。</p>
+
+<p align="center">
+  <img alt="Platform" src="https://img.shields.io/badge/platform-Windows-111111">
+  <img alt="Electron" src="https://img.shields.io/badge/Electron-37-2356d8">
+  <img alt="Node" src="https://img.shields.io/badge/Node-%3E%3D18-1f8f5f">
+  <img alt="License" src="https://img.shields.io/badge/license-MIT-e84b2f">
+</p>
+
+<p align="center">
+  <img src="public/preview.svg" alt="Skills 管理器界面预览">
+</p>
+
+## 简介
+
+Skills 管理器把本地 AI Agent Skills 当作可索引、可组合、可切换的结构化资产，而不是散落在不同工具目录里的一堆文件夹。
+
+它会把导入的 Skill 保存到 `~/.skills-manage/store`，再通过目录符号链接或 Windows junction 启用到目标目录：
 
 - `~/.opencode/skills`
 - `~/.claude/skills`
@@ -10,13 +29,29 @@
 
 应用只会禁用指向自身托管仓库的链接，不会删除或覆盖用户手动安装的外部 Skill。
 
+## 功能
+
+- 扫描 OpenCode、Claude、Agents 当前可见的 Skills。
+- 导入本地 Skill 文件夹。
+- 从 GitHub 联网搜索并加载包含 `SKILL.md` 的 Skill 仓库。
+- 按目标环境启用或禁用托管 Skill。
+- 可视化搭建 Skill 工作流，并一键调用外部执行器运行。
+- 保存、应用、删除 Skill 配置方案。
+- 显示托管仓库、联网下载缓存和目标目录路径。
+
+## 要求
+
+- Windows
+- Node.js `>= 18`
+- npm
+- Git，联网加载 GitHub Skill 时需要
+- 可选：`opencode`、`cc` 或其它可执行命令，用于运行工作流
+
 ## 安装
 
 ```bash
 npm install
 ```
-
-联网加载 GitHub Skill 需要本机已安装 `git`，并且能访问 GitHub。
 
 ## 开发运行
 
@@ -32,23 +67,13 @@ npm run desktop
 npm run build
 ```
 
-输出目录：
+输出位置：
 
 ```text
 release/win-unpacked/Skills 管理器.exe
 ```
 
 双击 `Skills 管理器.exe` 即可打开桌面应用，不会打开系统浏览器。
-
-## 功能
-
-- 扫描 OpenCode、Claude、Agents 当前可见的 Skills。
-- 导入本地 Skill 文件夹。
-- 从 GitHub 联网搜索并加载包含 `SKILL.md` 的 Skill 仓库。
-- 按目标环境启用或禁用托管 Skill。
-- 可视化搭建 Skill 工作流，并一键调用外部执行器运行。
-- 保存、应用、删除 Skill 配置方案。
-- 显示托管仓库和目标目录路径。
 
 ## 使用流程
 
@@ -110,15 +135,6 @@ my-agent --run
 - 已存在的外部目录不会被覆盖。
 - 已存在的外部链接不会被删除。
 
-## 项目结构
-
-```text
-electron/          Electron 主进程和 preload
-public/            应用界面
-src/manager.js     Skills 管理核心逻辑
-scripts/build-app.js 构建免安装桌面应用
-```
-
 ## Skill 格式
 
 一个 Skill 是包含 `SKILL.md` 的目录：
@@ -129,3 +145,30 @@ my-skill/
   scripts/
   assets/
 ```
+
+## 项目结构
+
+```text
+electron/              Electron 主进程和 preload
+public/                应用界面、图标和 README 预览图
+src/manager.js         Skills 管理、联网搜索、工作流运行核心逻辑
+scripts/build-app.js   构建免安装桌面应用
+```
+
+## 贡献
+
+欢迎提交 Issue 和 Pull Request。建议改动前先运行：
+
+```bash
+npm run check
+```
+
+如果涉及界面或构建流程，也请运行：
+
+```bash
+npm run build
+```
+
+## 许可证
+
+MIT
