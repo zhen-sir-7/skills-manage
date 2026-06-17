@@ -12,9 +12,13 @@ import {
   importOnlineSkill,
   listManagedSkills,
   listProfiles,
+  listWorkflows,
+  runWorkflow,
   saveProfile,
+  saveWorkflow,
   scanSkills,
   searchOnlineSkills,
+  deleteWorkflow,
 } from "../src/manager.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -100,6 +104,7 @@ ipcMain.handle("state", async () => ({
   scanned: await scanSkills("all"),
   managed: await listManagedSkills(),
   profiles: await listProfiles(),
+  workflows: await listWorkflows(),
 }));
 
 ipcMain.handle("pick-skill-folder", async () => {
@@ -118,3 +123,6 @@ ipcMain.handle("disable-skill", async (_event, payload) => disableSkill(payload.
 ipcMain.handle("save-profile", async (_event, payload) => saveProfile(payload.name, payload.target));
 ipcMain.handle("apply-profile", async (_event, payload) => applyProfile(payload.name, payload.target));
 ipcMain.handle("delete-profile", async (_event, payload) => deleteProfile(payload.name));
+ipcMain.handle("save-workflow", async (_event, payload) => saveWorkflow(payload));
+ipcMain.handle("delete-workflow", async (_event, payload) => deleteWorkflow(payload.name));
+ipcMain.handle("run-workflow", async (_event, payload) => runWorkflow(payload.name));

@@ -55,6 +55,35 @@
           </select>
         </section>
 
+        <section class="panel workflowPanel">
+          <div class="panelHead">
+            <div>
+              <h2>00 / 工作流搭建</h2>
+              <p>用 Skills 组合成步骤流，保存后可一键启动外部执行器。</p>
+            </div>
+          </div>
+          <div class="workflowBuilder">
+            <div class="workflowForm">
+              <input id="workflowName" placeholder="工作流名称，例如：公众号发布">
+              <select id="workflowSkill"></select>
+              <select id="workflowRunner">
+                <option value="opencode">OpenCode</option>
+                <option value="cc">Claude Code / cc</option>
+                <option value="custom">自定义命令</option>
+              </select>
+              <input id="workflowCommand" placeholder="自定义命令，例如：my-agent --run">
+              <textarea id="workflowPrompt" placeholder="这个步骤要执行什么？例如：使用该 Skill 生成公众号文章草稿"></textarea>
+              <button id="addWorkflowStepButton">添加步骤</button>
+              <button id="saveWorkflowButton" class="secondaryButton">保存工作流</button>
+            </div>
+            <div>
+              <div id="workflowSteps" class="workflowSteps"></div>
+              <div id="workflowList" class="workflowList"></div>
+              <pre id="workflowLog" class="workflowLog">运行日志会显示在这里。</pre>
+            </div>
+          </div>
+        </section>
+
         <section class="contentGrid">
           <div class="panel resultsPanel">
             <div class="panelHead">

@@ -27,6 +27,7 @@ body {
 }
 
 button, input, select { font: inherit; }
+textarea { font: inherit; }
 button { cursor: pointer; }
 
 .structuralGrid {
@@ -140,7 +141,7 @@ p { color: var(--muted); line-height: 1.62; }
 .stats span { font-size: 12px; font-weight: 1000; letter-spacing: 0.16em; }
 
 .searchBar { display: grid; grid-template-columns: minmax(0, 1fr) 170px; gap: 12px; margin: 18px 0; }
-input, select {
+input, select, textarea {
   width: 100%;
   padding: 14px 15px;
   border: 3px solid var(--line);
@@ -151,6 +152,24 @@ input, select {
   box-shadow: 4px 4px 0 var(--line);
 }
 input:focus, select:focus { box-shadow: 4px 4px 0 var(--blue); }
+textarea:focus { box-shadow: 4px 4px 0 var(--blue); }
+
+.workflowPanel { margin-bottom: 18px; }
+.workflowBuilder { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 16px; padding: 16px; }
+.workflowForm { display: grid; gap: 10px; align-content: start; }
+.workflowForm textarea { min-height: 116px; resize: vertical; }
+.workflowForm button { padding: 12px; border: 3px solid var(--line); background: var(--ink); color: var(--paper); font-weight: 1000; }
+.workflowForm .secondaryButton { background: var(--blue); }
+.workflowSteps, .workflowList { display: grid; gap: 10px; margin-bottom: 12px; }
+.workflowSteps p, .workflowList p { margin: 0; font-size: 13px; }
+.workflowStep { display: grid; grid-template-columns: 38px 1fr 70px; gap: 10px; align-items: start; padding: 12px; border: 3px solid var(--line); background: #fbf8ef; }
+.workflowStep p { margin: 6px 0; font-size: 13px; }
+.workflowStep button { padding: 8px; border: 2px solid var(--line); background: var(--accent); color: #fff; font-weight: 1000; }
+.stepIndex { display: grid; place-items: center; width: 32px; height: 32px; border: 3px solid var(--line); background: var(--yellow); font-weight: 1000; }
+.workflowSaved { display: grid; grid-template-columns: 1fr; gap: 10px; padding: 12px; border: 3px solid var(--line); background: #fbf8ef; }
+.workflowSaved > div:first-child { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+.workflowActions { display: grid; grid-template-columns: 1fr 82px 82px; gap: 8px; }
+.workflowLog { min-height: 120px; max-height: 260px; overflow: auto; padding: 12px; border: 3px solid var(--line); background: #111; color: #f2f0e8; font-size: 12px; }
 
 .contentGrid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 320px); gap: 16px; align-items: start; }
 .panel { border: 3px solid var(--line); background: var(--field); box-shadow: 6px 6px 0 var(--line); }
@@ -207,6 +226,7 @@ input:focus, select:focus { box-shadow: 4px 4px 0 var(--blue); }
 
 @media (max-width: 1180px) {
   .contentGrid { grid-template-columns: 1fr; }
+  .workflowBuilder { grid-template-columns: 1fr; }
   .rightRail { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
 }
 

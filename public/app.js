@@ -2,6 +2,7 @@ const targets = ["opencode", "claude", "agents"];
 const api = window.skillsManage;
 let state = null;
 let activeTarget = "opencode";
+let draftWorkflowSteps = [];
 
 const el = {
   targetTabs: document.querySelector("#targetTabs"),
@@ -18,6 +19,14 @@ const el = {
   statVisible: document.querySelector("#statVisible"),
   statManaged: document.querySelector("#statManaged"),
   statProfiles: document.querySelector("#statProfiles"),
+  workflowName: document.querySelector("#workflowName"),
+  workflowSkill: document.querySelector("#workflowSkill"),
+  workflowRunner: document.querySelector("#workflowRunner"),
+  workflowCommand: document.querySelector("#workflowCommand"),
+  workflowPrompt: document.querySelector("#workflowPrompt"),
+  workflowSteps: document.querySelector("#workflowSteps"),
+  workflowList: document.querySelector("#workflowList"),
+  workflowLog: document.querySelector("#workflowLog"),
 };
 
 for (const target of targets) {
@@ -33,6 +42,8 @@ for (const target of targets) {
 
 document.querySelector("#refreshButton").addEventListener("click", refresh);
 document.querySelector("#onlineSearchButton").addEventListener("click", searchOnline);
+document.querySelector("#addWorkflowStepButton").addEventListener("click", addWorkflowStep);
+document.querySelector("#saveWorkflowButton").addEventListener("click", saveWorkflow);
 el.onlineQuery.addEventListener("keydown", (event) => {
   if (event.key === "Enter") searchOnline();
 });
@@ -67,6 +78,7 @@ function render() {
   renderTargets();
   renderStats();
   renderResults();
+  renderWorkflowBuilder();
   renderProfiles();
   renderPaths();
 }
@@ -189,6 +201,101 @@ function renderProfiles() {
     actions.append(button("删除", "", () => action(() => api.deleteProfile({ name: profile.name }), `已删除 ${profile.name}`)));
     el.profiles.append(item);
   }
+}
+
+function renderWorkflowBuilder() {
+  const skills = state.managed.length ? state.managed : buildResults();
+  el.workflowSkill.innerHTML = "";
+  for (const skill of skills) {
+    const option = document.createElement("option");
+    option.value = skill.name;
+    option.textContent = `${skill.name} - ${skill.title ?? skill.name}`;
+    el.workflowSkill.append(option);
+  }
+
+  el.workflowSteps.innerHTML = "";
+  if (draftWorkflowSteps.length === 0) {
+    el.workflowSteps.innerHTML = `<p>还没有步骤。选择 Skill，写提示词，然后添加步骤。</p>`;
+  } else {
+    draftWorkflowSteps.forEach((step, index) => {
+      const item = document.createElement("div");
+      item.className = "workflowStep";
+      item.innerHTML = `
+        <div class="stepIndex">${index + 1}</div>
+        <div><strong>${escapeHtml(step.skill)}</strong><p>${escapeHtml(step.prompt)}</p><span class="tag">${escapeHtml(step.runner)}</span></div>
+        <button>删除</button>
+      `;
+      item.querySelector("button").addEventListener("click", () => {
+        draftWorkflowSteps.splice(index, 1);
+        renderWorkflowBuilder();
+      });
+      el.workflowSteps.append(item);
+    });
+  }
+
+  el.workflowList.innerHTML = "";
+  if (!state.workflows?.length) {
+    el.workflowList.innerHTML = `<p>还没有保存的工作流。</p>`;
+    return;
+  }
+
+  for (const workflow of state.workflows) {
+    const item = document.createElement("div");
+    item.className = "workflowSaved";
+    item.innerHTML = `
+      <div><strong>${escapeHtml(workflow.name)}</strong><span class="tag">${workflow.steps.length} 步</span></div>
+      <div class="workflowActions"></div>
+    `;
+    const actions = item.querySelector(".workflowActions");
+    actions.append(button("一键启动", "actionButton", () => runWorkflow(workflow.name)));
+    actions.append(button("载入", "actionButton secondary", () => loadWorkflow(workflow)));
+    actions.append(button("删除", "actionButton danger", () => action(() => api.deleteWorkflow({ name: workflow.name }), `已删除工作流 ${workflow.name}`)));
+    el.workflowList.append(item);
+  }
+}
+
+function addWorkflowStep() {
+  const skill = el.workflowSkill.value;
+  const runner = el.workflowRunner.value;
+  const command = el.workflowCommand.value.trim();
+  const prompt = el.workflowPrompt.value.trim();
+  if (!skill) return notify("请先选择 Skill");
+  if (!prompt) return notify("请填写步骤提示词");
+  draftWorkflowSteps.push({ skill, runner, command, prompt });
+  el.workflowPrompt.value = "";
+  renderWorkflowBuilder();
+}
+
+async function saveWorkflow() {
+  const name = el.workflowName.value.trim();
+  if (!name) return notify("请输入工作流名称");
+  if (draftWorkflowSteps.length === 0) return notify("请先添加至少一个步骤");
+  await action(() => api.saveWorkflow({ name, steps: draftWorkflowSteps }), `已保存工作流 ${name}`);
+}
+
+function loadWorkflow(workflow) {
+  el.workflowName.value = workflow.name;
+  draftWorkflowSteps = workflow.steps.map((step) => ({ ...step }));
+  renderWorkflowBuilder();
+  notify(`已载入工作流 ${workflow.name}`);
+}
+
+async function runWorkflow(name) {
+  el.workflowLog.textContent = `正在启动工作流：${name}\n`;
+  try {
+    const result = await api.runWorkflow({ name });
+    el.workflowLog.textContent = result.logs.map(formatWorkflowLog).join("\n\n");
+    await refresh();
+  } catch (error) {
+    el.workflowLog.textContent += error.message;
+    notify(error.message);
+  }
+}
+
+function formatWorkflowLog(log) {
+  const head = `${log.ok ? "成功" : "失败"} / 第 ${log.index + 1} 步 / ${log.step.skill}`;
+  if (!log.ok) return `${head}\n${log.error}`;
+  return `${head}\n命令：${log.command} ${(log.args ?? []).join(" ")}\n${log.stdout || log.stderr || "无输出"}`;
 }
 
 function renderPaths() {

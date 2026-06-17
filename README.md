@@ -46,6 +46,7 @@ release/win-unpacked/Skills 管理器.exe
 - 导入本地 Skill 文件夹。
 - 从 GitHub 联网搜索并加载包含 `SKILL.md` 的 Skill 仓库。
 - 按目标环境启用或禁用托管 Skill。
+- 可视化搭建 Skill 工作流，并一键调用外部执行器运行。
 - 保存、应用、删除 Skill 配置方案。
 - 显示托管仓库和目标目录路径。
 
@@ -69,6 +70,37 @@ release/win-unpacked/Skills 管理器.exe
 ```text
 ~/.skills-manage/downloads
 ```
+
+## 工作流搭建
+
+1. 在 `工作流搭建` 区输入工作流名称。
+2. 选择一个已托管 Skill。
+3. 选择执行器：`OpenCode`、`Claude Code / cc` 或 `自定义命令`。
+4. 输入该步骤要执行的提示词，点击 `添加步骤`。
+5. 多个步骤会按顺序执行，点击 `保存工作流` 后可一键启动。
+
+运行时会把以下内容作为输入传给执行器：
+
+```text
+使用 Skill：<skill-name>
+
+<步骤提示词>
+```
+
+默认执行方式：
+
+```text
+opencode "<输入>"
+cc "<输入>"
+```
+
+如果本机 CLI 参数不同，请选择 `自定义命令`，例如：
+
+```text
+my-agent --run
+```
+
+应用会把步骤输入追加到自定义命令参数末尾。
 
 ## 安全规则
 

@@ -11,4 +11,7 @@ contextBridge.exposeInMainWorld("skillsManage", {
   saveProfile: (payload) => ipcRenderer.invoke("save-profile", payload),
   applyProfile: (payload) => ipcRenderer.invoke("apply-profile", payload),
   deleteProfile: (payload) => ipcRenderer.invoke("delete-profile", payload),
+  saveWorkflow: (payload) => ipcRenderer.invoke("save-workflow", payload),
+  deleteWorkflow: (payload) => ipcRenderer.invoke("delete-workflow", payload),
+  runWorkflow: (payload) => ipcRenderer.invoke("run-workflow", payload),
 });

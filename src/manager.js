@@ -9,6 +9,7 @@ export const STORE_DIR = path.join(APP_DIR, "store");
 export const DOWNLOADS_DIR = path.join(APP_DIR, "downloads");
 export const DB_PATH = path.join(APP_DIR, "skills.json");
 export const PROFILES_PATH = path.join(APP_DIR, "profiles.json");
+export const WORKFLOWS_PATH = path.join(APP_DIR, "workflows.json");
 const execFileAsync = promisify(execFile);
 
 export const TARGETS = {
@@ -21,6 +22,7 @@ export async function ensureState() {
   await fs.mkdir(STORE_DIR, { recursive: true });
   await writeJsonIfMissing(DB_PATH, { skills: {} });
   await writeJsonIfMissing(PROFILES_PATH, { profiles: {} });
+  await writeJsonIfMissing(WORKFLOWS_PATH, { workflows: {} });
 }
 
 export async function scanSkills(target = "all") {
@@ -191,8 +193,94 @@ export async function listProfiles() {
   return Object.entries(state.profiles).map(([name, profile]) => ({ name, ...profile }));
 }
 
+export async function listWorkflows() {
+  await ensureState();
+  const state = await readJson(WORKFLOWS_PATH);
+  return Object.entries(state.workflows).map(([name, workflow]) => ({ name, ...workflow }));
+}
+
+export async function saveWorkflow(payload) {
+  await ensureState();
+  const name = normalizeName(payload?.name);
+  if (!name) throw new Error("请输入工作流名称。");
+  const steps = normalizeWorkflowSteps(payload?.steps);
+  if (steps.length === 0) throw new Error("至少需要一个工作流步骤。");
+
+  const state = await readJson(WORKFLOWS_PATH);
+  state.workflows[name] = { steps, savedAt: new Date().toISOString() };
+  await writeJson(WORKFLOWS_PATH, state);
+  return { name, steps };
+}
+
+export async function deleteWorkflow(name) {
+  await ensureState();
+  const normalizedName = normalizeName(name);
+  const state = await readJson(WORKFLOWS_PATH);
+  delete state.workflows[normalizedName];
+  await writeJson(WORKFLOWS_PATH, state);
+  return { name: normalizedName };
+}
+
+export async function runWorkflow(name) {
+  await ensureState();
+  const normalizedName = normalizeName(name);
+  const state = await readJson(WORKFLOWS_PATH);
+  const workflow = state.workflows[normalizedName];
+  if (!workflow) throw new Error(`未知工作流：${normalizedName}`);
+
+  const logs = [];
+  for (const [index, step] of workflow.steps.entries()) {
+    const startedAt = new Date().toISOString();
+    try {
+      const result = await runWorkflowStep(step);
+      logs.push({ index, step, ok: true, startedAt, finishedAt: new Date().toISOString(), ...result });
+    } catch (error) {
+      logs.push({ index, step, ok: false, startedAt, finishedAt: new Date().toISOString(), error: error.message });
+      break;
+    }
+  }
+  return { name: normalizedName, logs };
+}
+
 export function getPaths() {
   return { state: APP_DIR, store: STORE_DIR, downloads: DOWNLOADS_DIR, targets: TARGETS };
+}
+
+async function runWorkflowStep(step) {
+  const input = buildStepInput(step);
+  if (step.runner === "opencode") return runCommand("opencode", [input]);
+  if (step.runner === "cc") return runCommand("cc", [input]);
+  if (step.runner === "custom") {
+    const command = String(step.command ?? "").trim();
+    if (!command) throw new Error("自定义步骤缺少命令。");
+    const parts = command.split(/\s+/);
+    return runCommand(parts[0], [...parts.slice(1), input]);
+  }
+  throw new Error(`未知执行器：${step.runner}`);
+}
+
+async function runCommand(command, args) {
+  const result = await execFileAsync(command, args, { windowsHide: true, timeout: 300000, maxBuffer: 1024 * 1024 * 10 });
+  return { command, args, stdout: result.stdout, stderr: result.stderr };
+}
+
+function buildStepInput(step) {
+  const lines = [];
+  lines.push(`使用 Skill：${step.skill}`);
+  lines.push("");
+  lines.push(step.prompt);
+  return lines.join("\n");
+}
+
+function normalizeWorkflowSteps(steps) {
+  return (Array.isArray(steps) ? steps : [])
+    .map((step) => ({
+      skill: normalizeName(step?.skill),
+      runner: ["opencode", "cc", "custom"].includes(step?.runner) ? step.runner : "opencode",
+      command: String(step?.command ?? "").trim(),
+      prompt: String(step?.prompt ?? "").trim(),
+    }))
+    .filter((step) => step.skill && step.prompt);
 }
 
 async function linkSkill(name, sourcePath, target) {
